@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Les Voiliers de Rémi - Ressources à télécharger{% endblock %}
+{% block user_initials %}{{ user_initials }}{% endblock %}
+{% block user_name %}{{ user_name }}{% endblock %}
+{% block account_type %}{{ account_type|lower }}{% endblock %}
+{% block account_type_text %}{{ account_type }}{% endblock %}
+{% block content %}
+<!-- Section de sélection -->
+<div class="selection-section">
+    <h2 class="section-title">Ressources à télécharger</h2>
+
+    <form method="GET" action="{% url 'learn' %}">
+        <div class="selection-filters">
+            <!-- Filtre par thème -->
+            <div class="filter-group">
+                <label for="theme-select">Choisir un thème :</label>
+                <select id="theme-select" name="theme" class="filter-select" onchange="this.form.submit()">
+                    <option value="all" {% if selected_theme == 'all' %}selected{% endif %}>Tous les thèmes</option>
+                    {% for theme in themes %}
+                    <option value="{{ theme.id }}" {% if selected_theme == theme.id|stringformat:"s" %}selected{% endif %}>Thème {{ theme.id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Filtre par cours -->
+            <div class="filter-group">
+                <label for="course-select">Choisir un cours :</label>
+                <select id="course-select" name="course" class="filter-select" {% if not courses %}disabled{% endif %}>
+                    <option value="all" {% if selected_course == 'all' %}selected{% endif %}>Tous les cours</option>
+                    {% for course in courses %}
+                    <option value="{{ course.id }}" {% if selected_course == course.id|stringformat:"s" %}selected{% endif %}>{{ course.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Section des résultats -->
+<div class="resources-section">
+    <div class="resources-header">
+        <h3 id="resources-title">Ressources disponibles</h3>
+        <div class="resources-count">
+            {% if resources %}
+                {{ resources.paginator.count }} fichier{{ resources.paginator.count|pluralize }} disponible{{ resources.paginator.count|pluralize }}
+            {% else %}
+                0 fichier disponible
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="resources-list">
+        {% for media in resources %}
+        <div class="resource-card">
+            <div class="resource-icon">
+                <i class="fas fa-file-{{ media.type }}"></i>
+            </div>
+            <div class="resource-info">
+                <div class="resource-title">{{ media.titre|default:"Sans titre" }}</div>
+                <div class="resource-meta">
+                    <span class="resource-course">{{ media.cours_nom|default:"Inconnu" }}</span>
+                </div>
+                <div class="resource-description">
+                    <strong>Type :</strong> {{ media.type|default:"Inconnu" }}
+                </div>
+            </div>
+            <div class="resource-actions">
+                <a href="{{ media.url }}" class="btn btn-download" download>
+                    <i class="fas fa-download"></i> Télécharger
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-resources">
+            <p>Aucune ressource ne correspond à vos critères de recherche.</p>
+            {% if selected_theme != 'all' and not courses %}
+            <p>Ce thème ne contient aucun cours.</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if resources.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if resources.has_previous %}
+        <a href="?page=1{% if selected_theme %}&theme={{ selected_theme }}{% endif %}{% if selected_course %}&course={{ selected_course }}{% endif %}" class="page-btn">
+            <i class="fas fa-chevron-left"></i><i class="fas fa-chevron-left"></i>
+        </a>
+        <a href="?page={{ resources.previous_page_number }}{% if selected_theme %}&theme={{ selected_theme }}{% endif %}{% if selected_course %}&course={{ selected_course }}{% endif %}" class="page-btn">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ resources.number }} sur {{ resources.paginator.num_pages }}
+        </span>
+
+        {% if resources.has_next %}
+        <a href="?page={{ resources.next_page_number }}{% if selected_theme %}&theme={{ selected_theme }}{% endif %}{% if selected_course %}&course={{ selected_course }}{% endif %}" class="page-btn">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a href="?page={{ resources.paginator.num_pages }}{% if selected_theme %}&theme={{ selected_theme }}{% endif %}{% if selected_course %}&course={{ selected_course }}{% endif %}" class="page-btn">
+            <i class="fas fa-chevron-right"></i><i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

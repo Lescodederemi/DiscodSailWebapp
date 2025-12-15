@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paramètres du Compte - Les Voiliers de Rémi{% endblock %}
+
+{% block user_initials %}ME{% endblock %}
+{% block account_type %}premium{% endblock %}
+{% block account_type_text %}Premium{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Styles spécifiques pour la page de paramètres */
+    .card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: var(--primary);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-title {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+    
+    .card-icon {
+        font-size: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .discord-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
+    
+    .discord-avatar-large img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid var(--primary);
+    }
+    
+    .discord-details {
+        flex-grow: 1;
+    }
+    
+    .discord-username {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--dark);
+        margin-bottom: 5px;
+    }
+    
+    .discord-id {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    
+    .discord-connection {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #28a745;
+        font-weight: 500;
+    }
+    
+    .connected {
+        color: #28a745;
+        font-size: 0.8rem;
+    }
+    
+    .discord-actions {
+        border-top: 1px solid #eee;
+        padding-top: 20px;
+    }
+    
+    .btn-discord-disconnect {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-discord-disconnect:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+    }
+    
+    .info-note {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .info-note.warning {
+        background: #fff3cd;
+        color: #856404;
+        border-left: 4px solid #ffc107;
+    }
+    
+    .subscription-info {
+        margin-bottom: 20px;
+    }
+    
+    .subscription-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+    
+    .badge.premium {
+        background: #ffc107;
+        color: #856404;
+    }
+    
+    .subscription-type {
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .subscription-details {
+        margin-bottom: 20px;
+    }
+    
+    .detail-item {
+        display: flex;
+        justify-content: between;
+        margin-bottom: 8px;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        color: var(--dark);
+        min-width: 150px;
+    }
+    
+    .detail-value {
+        color: #666;
+    }
+    
+    .subscription-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-upgrade {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-upgrade:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    .preferences-container {
+        margin-bottom: 20px;
+    }
+    
+    .preference-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .preference-info h4 {
+        margin: 0 0 5px 0;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .preference-info p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    /* Switch */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+    }
+    
+    input:checked + .slider {
+        background-color: var(--primary);
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    .slider.round {
+        border-radius: 24px;
+    }
+    
+    .slider.round:before {
+        border-radius: 50%;
+    }
+    
+    /* Select styles */
+    .theme-select, .language-select {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: white;
+        color: var(--dark);
+        font-size: 0.9rem;
+        min-width: 120px;
+    }
+    
+    @media (max-width: 768px) {
+        .discord-info {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .subscription-actions {
+            flex-direction: column;
+        }
+        
+        .preference-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .detail-item {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .detail-label {
+            min-width: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Compte Discord</h2>
+        <div class="card-icon">
+            <i class="fab fa-discord"></i>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <div class="discord-info">
+            <div class="discord-avatar-large">
+                
+            </div>
+            <div class="discord-details">
+                
+                <div class="discord-connection">
+                    <i class="fas fa-circle connected"></i> Connecté via Discord
+                </div>
+            </div>
+        </div>
+        
+        <div class="discord-actions">
+            <button class="btn btn-discord-disconnect" id="disconnectDiscordBtn">
+                <i class="fas fa-unlink"></i> Déconnecter le compte
+            </button>
+            <div class="info-note">
+                <i class="fas fa-info-circle"></i> La déconnexion vous redirigera vers Discord pour confirmer.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Abonnement</h2>
+        <div class="card-icon">
+            <i class="fas fa-crown"></i>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <div class="subscription-info">
+            <div class="subscription-status">
+                <span class="badge premium">Premium</span>
+                <span class="subscription-type">Abonnement Capitaine</span>
+            </div>
+            
+            <div class="subscription-details">
+                <div class="detail-item">
+                    <span class="detail-label">Statut :</span>
+                    <span class="detail-value">Actif</span>
+                </div>
+            </div>
+            
+            <div class="subscription-actions">
+                <a href="https://fr.tipeee.com/les-voiliers-de-remi" class="btn btn-upgrade" target="_blank" >
+                    <i class="fas fa-arrow-up"></i> Gérer mon abonnement
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Mes Certificat</h2>
+        <div class="card-icon">
+            <i class="fas fa-certificate"></i>
+        </div>
+    </div>
+    
+   <div class="card-body">
+        {% if completed_courses %}
+        <p>Générez vos certificats pour les cours que vous avez validés :</p>
+        
+        <div class="courses-list" style="margin: 20px 0;">
+            {% for course in completed_courses %}
+            <div class="course-item" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: var(--primary);">{{ course.titre }}</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9em;">
+                        Validé le : {{ course.date_validation|date:"d/m/Y" }}
+                    </p>
+                </div>
+                {% if user_account_type == 'premium' or user_account_type == 'standard' %}
+               <a href="{% url 'generate_certificate' course.cours_id %}" class="btn btn-upgrade">
+    Télécharger le certificat
+</a>
+                {% else %}
+                    <div class="info-note warning" style="margin: 0; padding: 8px 12px;">
+                        <i class="fas fa-exclamation-triangle"></i> Premium requis
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="info-note">
+            <i class="fas fa-info-circle"></i> 
+            Vous n'avez pas encore validé de cours. Complétez des cours pour générer des certificats.
+        </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

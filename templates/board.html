@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tableau de bord - Les Voiliers de Rémi{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="card level-card">
+        <div class="card-header">
+            <h2 class="card-title">Mon Niveau</h2>
+            <div class="card-icon">
+                <i class="fas fa-signal"></i>
+            </div>
+        </div>
+        
+        {% if niveau_utilisateur %}
+        <div class="level-badge {{ niveau_utilisateur.niveau_classe }}">
+            <i class="fas fa-anchor"></i>
+        </div>
+        <h3 class="level-title">{{ niveau_utilisateur.nom_niveau }}</h3>
+        <p>Vous avez complété {{ niveau_utilisateur.pourcentage }}% du programme</p>
+        <div class="level-progress">
+            <div class="level-progress-bar" style="width: {{ niveau_utilisateur.pourcentage }}%;"></div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="card lives-card">
+        <div class="card-header">
+            <h2 class="card-title">Vies Disponibles</h2>
+            <div class="card-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+        </div>
+        
+        {% if vies_utilisateur %}
+        <div class="lives-info">
+             <div class="lives-count">{{ vies_utilisateur }}/3</div>
+            <div class="lives-text">Vies disponibles</div>
+        </div>
+        <div class="reset-info">
+			<i class="fas fa-sync-alt"></i>  Dernier reset: {{ prochain_reset|default:"Non défini" }}
+            <i class="fas fa-sync-alt"></i>  Prochain reset: 24h
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Statistiques du Serveur</h2>
+            <div class="card-icon">
+                <i class="fab fa-discord"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if discord_stats %}
+            <div class="server-stat">
+                <div class="stat-label">Membres connectés</div>
+                <div class="stat-value">{{ discord_stats.online_count }}</div>
+            </div>
+            <div class="server-stat">
+                <div class="stat-label">Total membres</div>
+                <div class="stat-value">{{ discord_stats.member_count }}</div>
+            </div>
+            <div class="server-stat">
+                <div class="stat-label"></div>
+                <div class="stat-value"></div>
+            </div>
+            {% else %}
+            <p class="no-data">Chargement des statistiques Discord...</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="card subscription-card">
+    <div class="card-header">
+        <h2 class="card-title">Abonnement Premium</h2>
+        <div class="card-icon">
+            <i class="fas fa-crown"></i>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <div class="plans-container">
+            <div class="plan-card captain">
+                <div class="plan-title">Capitaine de bord</div>
+                <div class="plan-price">20,00€</div>
+                <div class="plan-period">par mois</div>
+                <div class="plan-description">Accès complet à toutes les fonctionnalités</div>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Tous les cours</li>
+                    <li><i class="fas fa-check"></i> QCM illimités</li>
+                    <li><i class="fas fa-check"></i> Support prioritaire</li>
+                    <li><i class="fas fa-check"></i> Accès à l'IA de coaching</li>
+                    <li><i class="fas fa-check"></i> Exercices pratiques illimités</li>
+                    <li><i class="fas fa-check"></i> Requêtes IA illimitées</li>
+                </ul>
+                <a href="https://fr.tipeee.com/les-voiliers-de-remi/" class="btn btn-captain" >
+                    <i class="fas fa-shopping-cart"></i> S'abonner - 20,00€/mois
+                </a>
+                 <p class="tipee-note">Le paiement se fera en contrepartie sur la page Tipeee.</p>
+            </div>
+            
+            <div class="plan-card sailor">
+                <div class="plan-title">Amiral</div>
+                <div class="plan-price">10,00€</div>
+                <div class="plan-period">par mois</div>
+                <div class="plan-description">Accès aux cours essentiels</div>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Tous les cours</li>
+                    <li><i class="fas fa-check"></i> QCM illimités</li>
+                    <li><i class="fas fa-check"></i> Support prioritaire</li>
+                    <li><i class="fas fa-check"></i> Exercices pratiques illimités</li>
+                </ul>
+                <a href="https://fr.tipeee.com/les-voiliers-de-remi/" class="btn btn-sailor">
+                    <i class="fas fa-shopping-cart"></i> S'abonner - 10,00€/mois
+                </a>
+                <p class="tipee-note">Le paiement se fera en contrepartie sur la page Tipeee.</p>
+            </div>
+        </div>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Fonctionnalités</th>
+                    <th>Free</th>
+                    <th>Amiral</th>
+                    <th>Capitaine de bord</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="feature-name">Accès aux cours</td>
+                    <td class="free-cell">4 cours au choix</td>
+                    <td class="sailor-cell"><i class="fas fa-check"></i> Illimité</td>
+                    <td class="captain-cell"><i class="fas fa-check"></i> Illimité</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">QCM et exercices</td>
+                    <td class="free-cell">1/jour</td>
+                    <td class="sailor-cell"><i class="fas fa-check"></i> Illimités</td>
+                    <td class="captain-cell"><i class="fas fa-check"></i> Illimités</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Certificats</td>
+                    <td class="free-cell">❌</td>
+                    <td class="sailor-cell"><i class="fas fa-check"></i> Par niveau</td>
+                    <td class="captain-cell"><i class="fas fa-check"></i> Par cours</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Fonction IA</td>
+                    <td class="free-cell">❌</td>
+                    <td class="sailor-cell">❌</td>
+                    <td class="captain-cell"><i class="fas fa-check"></i> Accès complet</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Requêtes IA</td>
+                    <td class="free-cell">3/jour</td>
+                    <td class="sailor-cell">15/jour</td>
+                    <td class="captain-cell"><i class="fas fa-check"></i> Illimitées</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+<style>
+.no-data {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+    font-style: italic;
+}
+
+.server-stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.stat-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.stat-value {
+    font-weight: 700;
+    color: #1a3a5f;
+}
+
+.btn-annual {
+    margin-top: 10px;
+    background: linear-gradient(135deg, #2d5b7a, #1a3a5f);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+    font-size: 0.9em;
+}
+
+.btn-annual:hover {
+    background: linear-gradient(135deg, #3a6f94, #234b72);
+    transform: translateY(-2px);
+}
+
+.annual-option {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+}
+
+.annual-note {
+    font-size: 0.8em;
+    color: #2d7d5a;
+    text-align: center;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+.tipee-note {
+    font-size: 0.85em;
+    color: #555;
+    text-align: center;
+    margin-top: 15px;
+    font-style: italic;
+}
+</style>
+{% endblock %}

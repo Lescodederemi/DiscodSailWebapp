@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Certificat de Réussite</title>
+    {% load static %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+        
+        @page {
+            size: A3 landscape;
+            margin: 0;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 420mm;
+            height: 297mm;
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .certificate-container {
+            position: absolute;
+            top: 15mm;
+            left: 15mm;
+            right: 15mm;
+            bottom: 15mm;
+            padding: 10mm;
+            background: #fff;
+            border: 3mm solid #1a5276;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        .waves-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{% static "images/waves.png" %}');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.08;
+            z-index: -1;
+        }
+        
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 60mm;
+            font-weight: bold;
+            color: rgba(26, 82, 118, 0.03);
+            text-transform: uppercase;
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 10mm;
+        }
+        
+        .logo-container {
+            margin: 0 auto 3mm;
+            width: 40mm;
+            height: 40mm;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1.5mm solid #f1c40f;
+            box-shadow: 0 1mm 3mm rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 10mm;
+            font-weight: 700;
+            color: #1a5276;
+            margin-bottom: 1mm;
+            letter-spacing: 0.5mm;
+        }
+        
+        .subtitle {
+            font-size: 3mm;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5mm;
+        }
+        
+        .content {
+            text-align: center;
+            margin-bottom: 10mm;
+        }
+        
+        .username {
+            font-family: 'Playfair Display', serif;
+            font-size: 7mm;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 3mm;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .username:after {
+            content: '';
+            position: absolute;
+            bottom: -1mm;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60mm;
+            height: 0.5mm;
+            background: linear-gradient(to right, #1a5276, #f1c40f, #1a5276);
+        }
+        
+        .course-info {
+            font-size: 4mm;
+            margin-bottom: 2mm;
+            color: #34495e;
+            line-height: 1.4;
+        }
+        
+        .highlight {
+            font-weight: 600;
+            color: #1a5276;
+        }
+        
+        .details {
+            display: flex;
+            justify-content: space-around;
+            margin: 8mm 0;
+        }
+        
+        .detail-item {
+            text-align: center;
+            padding: 2mm;
+        }
+        
+        .detail-label {
+            font-size: 3mm;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.3mm;
+            margin-bottom: 0.5mm;
+        }
+        
+        .detail-value {
+            font-size: 3.5mm;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .signature-area {
+            display: flex;
+            justify-content: space-around;
+            margin: 10mm 0 5mm;
+        }
+        
+        .signature {
+            text-align: center;
+            width: 60mm;
+        }
+        
+        .signature-line {
+            width: 40mm;
+            height: 0.3mm;
+            background: #2c3e50;
+            margin: 1mm auto;
+        }
+        
+        .signature-name {
+            font-size: 3mm;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0.5mm;
+        }
+        
+        .signature-title {
+            font-size: 2.5mm;
+            color: #7f8c8d;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 5mm;
+            padding-top: 3mm;
+            border-top: 0.3mm solid #ecf0f1;
+        }
+        
+        .certificate-id {
+            font-size: 2.5mm;
+            color: #7f8c8d;
+            margin-bottom: 1mm;
+        }
+        
+        .id-number {
+            font-weight: bold;
+            color: #1a5276;
+        }
+        
+        .waves-decoration {
+            position: absolute;
+            bottom: 5mm;
+            right: 5mm;
+            width: 50mm;
+            height: 25mm;
+            opacity: 0.2;
+        }
+        
+        @media print {
+            body {
+                background: none;
+                width: 420mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .certificate-container {
+                box-shadow: none;
+                top: 10mm;
+                left: 10mm;
+                right: 10mm;
+                bottom: 10mm;
+                padding: 8mm;
+                border: 2mm solid #1a5276;
+            }
+            
+            .waves-background {
+                opacity: 0.05;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="waves-background"></div>
+    
+    <div class="certificate-container">
+        <div class="watermark">EXCELLENCE</div>
+        
+        <div class="header">
+            <div class="logo-container">
+                <img src="{% static 'images/remi.jpg' %}" alt="Logo Les Voiliers de Rémi" class="logo">
+            </div>
+            <div class="title">CERTIFICAT DE RÉUSSITE</div>
+            <div class="subtitle">Décerné avec distinction</div>
+        </div>
+        
+        <div class="content">
+            <div class="username">{{ discord_username }}</div>
+            
+            <div class="course-info">
+                a complété avec succès le cours
+            </div>
+            
+            <div class="course-info highlight">
+                « {{ cours_titre }} »
+            </div>
+            
+            <div class="course-info">
+                dans la thématique <span class="highlight">{{ thematique_nom }}</span>
+            </div>
+        </div>
+        
+        <div class="details">
+            <div class="detail-item">
+                <div class="detail-label">Date de validation</div>
+                <div class="detail-value">{{ date_validation }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Délivré le</div>
+                <div class="detail-value">{{ delivree_le }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Chapitres validés</div>
+                <div class="detail-value">{{ nombre_chapitres }}</div>
+            </div>
+        </div>
+        
+        <div class="signature-area">
+            <div class="signature">
+                <div class="signature-line"></div>
+                <div class="signature-name">Rémi Martin</div>
+                <div class="signature-title">Fondateur & Instructeur</div>
+            </div>
+            
+            <div class="signature">
+                <div class="signature-line"></div>
+                <div class="signature-name">Les Voiliers de Rémi</div>
+                <div class="signature-title">Organisme de Formation</div>
+            </div>
+        </div>
+        
+        <img src="{% static 'images/waves.png' %}" alt="Vagues décoratives" class="waves-decoration">
+        
+        <div class="footer">
+            <div class="certificate-id">
+                Identifiant du certificat: <span class="id-number">{{ certificat_id }}</span>
+            </div>
+            <p style="font-size: 2.5mm; margin: 1mm 0;">
+                Ce certificat atteste que l'apprenant a satisfait à toutes les exigences d'évaluation du cours mentionné.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

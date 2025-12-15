@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Les Voiliers de Rémi{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if user_info %}
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-sailboat logo-icon"></i>
+                <div class="logo-text">
+                    <div class="logo-title">Les Voiliers de Rémi</div>
+                    <div class="logo-subtitle">
+                        <i class="fas fa-flag flag"></i> Français
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="user-info">
+    <div class="user-avatar">
+        <img src="https://cdn.discordapp.com/avatars/{{ user_info.id }}/{{ user_info.avatar }}.png" 
+             alt="Avatar Discord" class="discord-avatar">
+    </div>
+    <div class="user-name">{{ user_info.username }}#{{ user_info.discriminator }}</div>
+	
+       <div class="account-type {% if user_account_type == 'premium' %}premium{% elif user_account_type == 'standard' %}standard{% else %}free{% endif %}">
+        Compte 
+        {% if user_account_type == 'premium' %}
+            Premium
+        {% elif user_account_type == 'standard' %}
+            Standard
+        {% else %}
+            Free
+        {% endif %}
+    </div>
+</div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="{% url 'board' %}" class="nav-link {% if request.resolver_match.url_name == 'board' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Tableau de bord
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'learn' %}" class="nav-link {% if request.resolver_match.url_name == 'learn' %}active{% endif %}">
+                    <i class="fas fa-book"></i> Ressources
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'doc' %}" class="nav-link {% if request.resolver_match.url_name == 'doc' %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i> Documentation
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'history' %}" class="nav-link {% if request.resolver_match.url_name == 'history' %}active{% endif %}">
+                    <i class="fas fa-history"></i> Historique
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'account' %}" class="nav-link {% if request.resolver_match.url_name == 'account' %}active{% endif %}">
+                    <i class="fas fa-user-cog"></i> Paramètres
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

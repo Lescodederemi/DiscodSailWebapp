@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Documentation - Les Voiliers de Rémi{% endblock %}
+{% block account_type %}premium{% endblock %}
+{% block account_type_text %}Premium{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Styles spécifiques uniquement pour cette page */
+    .command-section {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+    
+    .section-header {
+        background: var(--primary);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-header i {
+        margin-right: 10px;
+    }
+    
+    .command-card {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .command-syntax {
+        font-family: 'Courier New', monospace;
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 4px;
+        margin: 10px 0;
+        color: var(--dark);
+        border-left: 3px solid var(--primary);
+    }
+    
+    .param {
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .command-description {
+        margin: 15px 0;
+        color: #555;
+    }
+    
+    .permission-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        background: var(--accent);
+        color: white;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+    
+    .menu-example {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 15px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .menu-title {
+        font-weight: bold;
+        color: var(--dark);
+        font-size: 18px;
+    }
+    
+    .menu-time {
+        color: #95a5a6;
+        font-size: 0.9rem;
+    }
+    
+    .menu-content {
+        margin-bottom: 20px;
+    }
+    
+    .menu-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+    }
+    
+    .menu-option {
+        background: var(--primary);
+        color: white;
+        padding: 12px;
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+    }
+    
+    .menu-option:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+    }
+    
+    .doc-header {
+        margin-bottom: 30px;
+    }
+    
+    .doc-header h1 {
+        color: var(--dark);
+        margin-bottom: 10px;
+    }
+    
+    .doc-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+    /* Les sections de contenu sont masquées par défaut pour l'animation JS */
+    .content-section {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="doc-header">
+    <h1><i class="fas fa-file-alt"></i> Documentation Sail Practice</h1>
+    <p>Guide complet des commandes disponibles dans notre canal Discord</p>
+</div>
+
+<div class="command-section">
+    <div class="section-header">
+        <i class="fas fa-bars"></i>
+        <h2>Menu Utilisateur</h2>
+    </div>
+    
+    <div class="command-card">
+        <div class="command-syntax">
+            /lvr
+        </div>
+        <div class="command-description">
+            Lance le menu interactif principal avec les options disponibles.
+        </div>
+        
+        <div class="menu-example">
+            <div class="menu-header">
+                <div class="menu-title">Sail Pratice APP</div>
+                <div class="menu-time"></div>
+            </div>
+            <div class="menu-content">
+                <p><strong>Bienvenue sur le bot Sail Practice</strong></p>
+                <p>Cliquez sur les options suivantes :</p>
+                <ul>
+                    <li><strong>Météo</strong> - Générer un fichier grib</li>
+                    <li><strong>Learn</strong> - Lancer le module elearning</li>
+                    <li><strong>Exercices</strong> - Tester ses connaissances via les exercices</li>
+                    <li><strong>IA</strong> - Utiliser l'assistant IA</li>
+                    <li><strong>Gestion_compte</strong> - Gérer son compte via la plateforme</li>
+                </ul>
+            </div>
+            <div class="menu-options">
+                <div class="menu-option" data-target="meteo-content">Météo</div>
+                <div class="menu-option" data-target="learn-content">Learn</div>
+                <div class="menu-option" data-target="exercices-content">Exercices</div>
+                <div class="menu-option" data-target="ia-content">IA</div>
+                <div class="menu-option" data-target="gestion-compte-content">Gestion_compte</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+---
+
+<div class="command-section content-section" id="meteo-content">
+    <div class="section-header">
+        <i class="fas fa-cloud-sun-rain"></i>
+        <h2>Météo</h2>
+    </div>
+    <div class="command-card">
+        <div class="command-description">
+            Ce menu permet de générer un fichier GRIB pour la météo.
+            <ol>
+                <li>Après avoir cliqué sur "Météo", un bouton **"Générer GRIB"** apparaît.</li>
+                <li>Le bot affiche une carte du monde divisée en trois **zones** numérotées (1, 2, 3). Vous devez en sélectionner une.</li>
+                <li>Choisissez ensuite un **modèle météo** parmi les options disponibles : **ECMWF** ou **GFS**.</li>
+                <li>Sélectionnez une **date** pour laquelle vous souhaitez le GRIB (format AAAA-MM-JJ).</li>
+                <li>Le bot vous proposera alors un lien pour le téléchargement du fichier GRIB.</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="command-section content-section" id="learn-content">
+    <div class="section-header">
+        <i class="fas fa-book-reader"></i>
+        <h2>Learn</h2>
+    </div>
+    <div class="command-card">
+        <div class="command-description">
+            Ce menu vous permet d'accéder aux modules de formation.
+            <ol>
+                <li>Après avoir cliqué sur "Learn", vous devrez choisir une **thématique** parmi la liste proposée.</li>
+                <li>Puis, sélectionnez un **niveau** de difficulté pour le cours.</li>
+                <li>Le cours se lance, affichant son contenu chapitre par chapitre.</li>
+                <li>À la fin du dernier chapitre, un **QCM** (questionnaire à choix multiples) se lance automatiquement.</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="command-section content-section" id="exercices-content">
+    <div class="section-header">
+        <i class="fas fa-pencil-alt"></i>
+        <h2>Exercices</h2>
+    </div>
+    <div class="command-card">
+        <div class="command-description">
+            Testez vos connaissances grâce à des exercices interactifs.
+            <ol>
+                <li>Choisissez un **cours** que vous avez déjà suivi.</li>
+                <li>Sélectionnez la **difficulté** de l'exercice.</li>
+                <li>Le bot affichera les **instructions**. Vous pouvez taper vos réponses dans la barre de discussion de Discord.</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="command-section content-section" id="gestion-compte-content">
+    <div class="section-header">
+        <i class="fas fa-user-circle"></i>
+        <h2>Gestion_compte</h2>
+    </div>
+    <div class="command-card">
+        <div class="command-description">
+            Cette option vous redirige vers la plateforme web pour gérer votre compte.
+        </div>
+    </div>
+</div>
+
+<div class="command-section content-section" id="ia-content">
+    <div class="section-header">
+        <i class="fas fa-robot"></i>
+        <h2>IA</h2>
+    </div>
+    <div class="command-card">
+        <div class="command-description">
+            Fonctionnalité d'assistant IA en cours de développement. Prochainement disponible.
+        </div>
+    </div>
+</div>
+
+---
+<div class="command-section">
+    <div class="section-header">
+        <i class="fas fa-shield-alt"></i>
+        <h2>Commandes Administrateur</h2>
+    </div>
+    
+    <div class="command-card">
+        <h3>Gestion des Cours</h3>
+        <div class="command-syntax">
+            /creer_cours <span class="param">titre</span> <span class="param">description</span>
+        </div>
+        <div class="command-syntax">
+            /supprimer_cours <span class="param">cours_id</span> <span class="permission-badge">ADMIN</span>
+        </div>
+    </div>
+    
+    <div class="command-card">
+        <h3>Gestion des Médias</h3>
+        <div class="command-syntax">
+            /pj_ajouter <span class="param">type.pj</span> <span class="param">url</span>
+        </div>
+        <div class="command-syntax">
+            /pj_supprimer <span class="param">media_id</span> <span class="permission-badge">ADMIN</span>
+        </div>
+    </div>
+    
+    <div class="command-card">
+        <h3>Gestion des QCM</h3>
+        <div class="command-syntax">
+            /qcm_add <span class="param">cours_id</span> <span class="param">question</span>
+        </div>
+        <div class="command-syntax">
+            /qcm_delete <span class="param">qcm_id</span> <span class="permission-badge">ADMIN</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Sélectionne tous les boutons du menu et toutes les sections de contenu
+        const menuOptions = document.querySelectorAll('.menu-option');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        // Fonction pour masquer toutes les sections de contenu
+        const hideAllSections = () => {
+            contentSections.forEach(section => {
+                section.style.display = 'none';
+            });
+        };
+
+        // Ajoute un écouteur d'événement à chaque bouton
+        menuOptions.forEach(option => {
+            option.addEventListener('click', (event) => {
+                // Récupère l'ID de la section cible
+                const targetId = event.target.dataset.target;
+                const targetSection = document.getElementById(targetId);
+
+                // Masque toutes les sections
+                hideAllSections();
+
+                // Affiche uniquement la section ciblée
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

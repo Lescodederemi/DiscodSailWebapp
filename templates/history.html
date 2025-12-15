@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Les Voiliers de Rémi - Historique{% endblock %}
+{% block account_type %}free{% endblock %}
+{% block account_type_text %}Free{% endblock %}
+{% block extra_css %}
+<style>
+    /* Garde tous les styles CSS que tu as déjà */
+</style>
+{% endblock %}
+{% block content %}
+<!-- Historique des tentatives -->
+<div class="attempt-history">
+    <h2 class="section-title">
+        <i class="fas fa-history"></i> Historique des Tentatives
+    </h2>
+
+    <form method="GET" action="{% url 'history' %}" class="filters">
+        <button type="submit" name="status" value="" class="filter-btn {% if not selected_status %}active{% endif %}">Tous</button>
+        <button type="submit" name="status" value="termine" class="filter-btn {% if selected_status == 'termine' %}active{% endif %}">Réussis</button>
+        <button type="submit" name="status" value="en_cours" class="filter-btn {% if selected_status == 'en_cours' %}active{% endif %}">En cours</button>
+        <button type="submit" name="status" value="echoue" class="filter-btn {% if selected_status == 'echoue' %}active{% endif %}">Échoués</button>
+        <button type="submit" name="days" value="7" class="filter-btn {% if selected_days == 7 %}active{% endif %}">7 derniers jours</button>
+        <button type="submit" name="days" value="30" class="filter-btn {% if selected_days == 30 %}active{% endif %}">30 derniers jours</button>
+    </form>
+
+    <div class="history-tabs">
+        <a href="?activity_type=qcm{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_days %}&days={{ selected_days }}{% endif %}" class="tab {% if not selected_activity_type or selected_activity_type == 'qcm' %}active{% endif %}">QCM ({{ qcm_count|default:0 }})</a>
+        <a href="?activity_type=exercice{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_days %}&days={{ selected_days }}{% endif %}" class="tab {% if selected_activity_type == 'exercice' %}active{% endif %}">Exercices pratiques ({{ exercice_count|default:0 }})</a>
+    </div>
+
+    <ul class="history-list">
+        {% for activity in history %}
+        {% with etat_normalized=activity.etat|lower|cut:" "|cut:"_"|cut:"é"|cut:"è"|cut:"ê" %}
+        <li class="attempt-item">
+            <div class="attempt-status 
+                {% if etat_normalized == 'termine' %}status-success
+                {% elif etat_normalized == 'encours' %}status-in-progress
+                {% else %}status-failed{% endif %}">
+                <i class="fas 
+                    {% if etat_normalized == 'termine' %}fa-check
+                    {% elif etat_normalized == 'encours' %}fa-spinner fa-pulse
+                    {% else %}fa-times{% endif %}"></i>
+            </div>
+            <div class="attempt-details">
+                <div class="attempt-title">
+                    {% if activity.titre_activite %}
+                        {{ activity.titre_activite }}
+                    {% else %}
+                        Activité sans titre
+                    {% endif %}
+                </div>
+                <div class="attempt-meta">
+                    <span><i class="far fa-calendar"></i> {{ activity.date_activite|date:"d/m/Y H:i" }}</span>
+                    <span><i class="fas fa-tag"></i> {{ activity.type_activite|title }}</span>
+                    <span class="status-text {% if etat_normalized == 'termine' %}reussi
+                        {% elif etat_normalized == 'encours' %}en-cours
+                        {% else %}echoue{% endif %}">
+                        <i class="fas 
+                            {% if etat_normalized == 'termine' %}fa-check-circle
+                            {% elif etat_normalized == 'encours' %}fa-spinner
+                            {% else %}fa-times-circle{% endif %}"></i>
+                        {{ activity.etat|title }}
+                    </span>
+                    {% if activity.score and etat_normalized == 'termine' %}
+                    <span><i class="fas fa-percentage"></i> Score: {{ activity.score }}%</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="attempt-score 
+                {% if etat_normalized == 'termine' %}score-success
+                {% elif etat_normalized == 'encours' %}score-in-progress
+                {% else %}score-failed{% endif %}">
+                {% if etat_normalized == 'termine' %}
+                    <i class="fas fa-trophy"></i> Réussi
+                {% elif etat_normalized == 'encours' %}
+                    <i class="fas fa-clock"></i> En cours
+                {% else %}
+                    <i class="fas fa-redo"></i> Échoué
+                {% endif %}
+            </div>
+        </li>
+        {% endwith %}
+        {% empty %}
+        <div class="no-activities">
+            <p>Aucune activité ne correspond à vos critères de recherche.</p>
+        </div>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Statistiques -->
+<div class="stats-section">
+    <h2 class="section-title">
+        <i class="fas fa-chart-bar"></i> Mes Statistiques
+    </h2>
+
+    <div class="stats-grid">
+        <!-- Taux de réussite -->
+        <div class="stat-card">
+            <h3>Taux de réussite</h3>
+            <div class="stat-value">
+                {{ stats.success_rate|floatformat:2 }}%
+            </div>
+            <div class="stat-progress">
+                <div class="progress-bar" style="width: {{ stats.success_rate|floatformat:2 }}%;"></div>
+            </div>
+            <div class="stat-labels">
+                <span>0%</span>
+                <span>100%</span>
+            </div>
+        </div>
+
+        <!-- Répartition -->
+        <div class="stat-card">
+            <h3>Répartition</h3>
+            <div class="stat-distribution">
+                <div class="stat-item">
+                    <div class="stat-number success">{{ stats.reussi }}</div>
+                    <div class="stat-label">Réussis</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number in-progress">{{ stats.en_cours }}</div>
+                    <div class="stat-label">En cours</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number failed">{{ stats.echoue }}</div>
+                    <div class="stat-label">Échoués</div>
+                </div>
+            </div>
+            <div class="distribution-bar">
+                {% if stats.total > 0 %}
+                <div class="success-bar" style="width: {{ stats.success_rate|floatformat:2 }}%;"></div>
+                <div class="in-progress-bar" style="width: {% widthratio stats.en_cours stats.total 100 %}%;"></div>
+                <div class="failed-bar" style="width: {{ stats.failed_rate|floatformat:2 }}%;"></div>
+                {% endif %}
+            </div>
+        </div>
+
+<!-- Progression mensuelle -->
+<div class="stat-card">
+    <h3>Progression mensuelle</h3>
+    <div class="monthly-progress">
+        {% for month_data in stats.monthly_stats %}
+        {% if month_data.total > 0 %}
+        {% widthratio month_data.reussi month_data.total 100 as success_percent %}
+        {% widthratio month_data.en_cours month_data.total 100 as in_progress_percent %}
+        {% widthratio month_data.echoue month_data.total 100 as failed_percent %}
+        
+        <div class="month">
+            <div class="month-bars">
+                <!-- Barre de réussite (vert) -->
+                <div class="month-bar success-bar" style="height: {{ success_percent }}%"></div>
+                <!-- Barre en cours (orange) -->
+                <div class="month-bar in-progress-bar" style="height: {{ in_progress_percent }}%"></div>
+                <!-- Barre échouée (rouge) -->
+                <div class="month-bar failed-bar" style="height: {{ failed_percent }}%"></div>
+            </div>
+            <div class="month-name">
+                {% if month_data.mois == 1 or month_data.mois == '1' %}Jan
+                {% elif month_data.mois == 2 or month_data.mois == '2' %}Fév
+                {% elif month_data.mois == 3 or month_data.mois == '3' %}Mar
+                {% elif month_data.mois == 4 or month_data.mois == '4' %}Avr
+                {% elif month_data.mois == 5 or month_data.mois == '5' %}Mai
+                {% elif month_data.mois == 6 or month_data.mois == '6' %}Juin
+                {% elif month_data.mois == 7 or month_data.mois == '7' %}Juil
+                {% elif month_data.mois == 8 or month_data.mois == '8' %}Août
+                {% elif month_data.mois == 9 or month_data.mois == '9' %}Sep
+                {% elif month_data.mois == 10 or month_data.mois == '10' %}Oct
+                {% elif month_data.mois == 11 or month_data.mois == '11' %}Nov
+                {% elif month_data.mois == 12 or month_data.mois == '12' %}Déc
+                {% else %}{{ month_data.mois }}
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="month">
+            <div class="month-bars">
+                <div class="month-bar" style="height: 0%"></div>
+            </div>
+            <div class="month-name">
+                {% if month_data.mois == 1 or month_data.mois == '1' %}Jan
+                {% elif month_data.mois == 2 or month_data.mois == '2' %}Fév
+                {% elif month_data.mois == 3 or month_data.mois == '3' %}Mar
+                {% elif month_data.mois == 4 or month_data.mois == '4' %}Avr
+                {% elif month_data.mois == 5 or month_data.mois == '5' %}Mai
+                {% elif month_data.mois == 6 or month_data.mois == '6' %}Juin
+                {% elif month_data.mois == 7 or month_data.mois == '7' %}Juil
+                {% elif month_data.mois == 8 or month_data.mois == '8' %}Août
+                {% elif month_data.mois == 9 or month_data.mois == '9' %}Sep
+                {% elif month_data.mois == 10 or month_data.mois == '10' %}Oct
+                {% elif month_data.mois == 11 or month_data.mois == '11' %}Nov
+                {% elif month_data.mois == 12 or month_data.mois == '12' %}Déc
+                {% else %}{{ month_data.mois }}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        {% empty %}
+        <div class="no-data">
+            <p>Aucune donnée disponible pour les 6 derniers mois</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    /* Styles pour les statuts en cours */
+    .status-in-progress, .status-icon.in-progress {
+        color: var(--warning); /* Orange */
+    }
+    
+    .score-in-progress {
+        color: var(--warning); /* Orange */
+    }
+    
+    .stat-number.in-progress {
+        color: var(--warning); /* Orange */
+    }
+    
+    .in-progress-bar {
+        background: var(--warning); /* Orange */
+        height: 100%;
+    }
+    
+    .attempt-status.status-in-progress {
+        background: var(--warning); /* Orange */
+        color: white;
+    }
+    
+    /* Animation pour le spinner */
+    .fa-spinner.fa-pulse {
+        animation: fa-spin 1s infinite steps(8);
+
+    }
+	
+	<style>
+    .monthly-progress {
+        height: 200px;
+        display: flex;
+        align-items: flex-end;
+        gap: 20px;
+        margin-top: 20px;
+        padding: 0 10px;
+    }
+    
+    .month {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+    
+    .month-bars {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        width: 40px;
+        position: relative;
+    }
+    
+    .month-bar {
+        width: 100%;
+        border-radius: 3px 3px 0 0;
+    }
+    
+    .success-bar {
+        background: var(--success);
+    }
+    
+    .in-progress-bar {
+        background: var(--warning);
+    }
+    
+    .failed-bar {
+        background: var(--danger);
+    }
+    
+    .month-name {
+        font-size: 12px;
+        margin-top: 8px;
+        text-align: center;
+        font-weight: 500;
+    }
+    
+    .no-data {
+        text-align: center;
+        color: var(--navy);
+        font-style: italic;
+        width: 100%;
+        padding: 20px;
+    }
+</style>
+</style>
+	
+</style>
+{% endblock %}
